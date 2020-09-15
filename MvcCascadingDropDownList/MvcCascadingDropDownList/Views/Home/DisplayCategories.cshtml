@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "Cascading DropDownList example in ASP.NET MVC - dotnetmentors.com";
+}
+
+<h2>Cascading DropDownList example in ASP.NET MVC - dotnetmentors.com</h2>
+@using (Html.BeginForm("CategoryChosen", "Home",
+                FormMethod.Get))
+{
+    <table cellspacing="2" cellpadding="2">
+        <tr>
+            <td>
+                Category Type :
+            </td>
+            <td>
+               @Html.DropDownList("CategoryType")     
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                Sub Category:
+            </td>
+            <td>
+                @Html.DropDownList("SubCategory", new SelectList(string.Empty, "Value", "Text"), "Please select a Sub Category", new { style = "width:250px" })
+            </td>
+        </tr>
+    </table>    
+}
+
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#CategoryType").change(function () {
+            $("#SubCategory").empty();
+            $.ajax({
+
+                type: 'POST',
+
+                url: '@Url.Action("GetSubCategories")', 
+                dataType: 'json',
+                data: { id: $("#CategoryType").val() },
+                success: function (subcategories) {
+
+                    $.each(subcategories, function (i, subcategory) {
+
+                        $("#SubCategory").append('<option value="'
+                            + subcategory.Value + '">' +
+                            subcategory.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve Sub Categories : ' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
